@@ -12,3 +12,17 @@ Pull the model:
 ```bash
 ollama pull qwen3.5:9b
 ```
+
+## Running
+
+Start the Ollama server:
+
+```bash
+ollama serve
+```
+
+In a separate terminal, run the app:
+
+```bash
+uv run python main.py
+```
