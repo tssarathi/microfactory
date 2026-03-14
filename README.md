@@ -26,3 +26,7 @@ In a separate terminal, run the app:
 ```bash
 uv run python main.py
 ```
+
+---
+
+Thank you for visiting and checking out microfactory!   
