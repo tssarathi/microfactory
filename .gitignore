@@ -11,3 +11,6 @@ wheels/
 
 # vscode
 *.code-workspace
+
+# docs
+docs/
