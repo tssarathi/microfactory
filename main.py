@@ -1,10 +1,34 @@
 from openai import OpenAI
+import json
+
+from tools import (
+    search_work_orders,
+    get_work_order_details,
+    get_available_technicians,
+    search_parts,
+    get_customer_details,
+    get_customer_equipment,
+    get_equipment_details,
+)
+
+from tool_definitions import TOOLS
+
+TOOL_FUNCTIONS = {
+    "search_work_orders": search_work_orders,
+    "get_work_order_details": get_work_order_details,
+    "get_available_technicians": get_available_technicians,
+    "search_parts": search_parts,
+    "get_customer_details": get_customer_details,
+    "get_customer_equipment": get_customer_equipment,
+    "get_equipment_details": get_equipment_details,
+}
 
 client = OpenAI(
     base_url="http://localhost:11434/v1/",
     api_key="ollama",  # not required for local ollama
 )
 
+MODEL = "qwen3.5:9b"
 
 SYSTEM_PROMPT = """You are an expert field service technician assistant working 
 in Queensland, Australia. You support HVAC, electrical, plumbing, and 
@@ -28,39 +52,94 @@ and residential properties across the Brisbane metropolitan area.
 """
 
 
-def main():
+def call_tool(tool_name: str, arguments: dict) -> str:
+    tool = TOOL_FUNCTIONS.get(tool_name)
+    if not tool:
+        return f"Error: Unknown tool '{tool_name}'"
 
-    history = [{"role": "system", "content": SYSTEM_PROMPT}]
+    try:
+        result = tool(**arguments)
+        return result
+    except Exception as e:
+        return f"Error calling {tool_name}: {str(e)}"
+
+
+def get_response(history: list) -> str:
 
     while True:
-        user_input = input("You: ")
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=history,
+            tools=TOOLS,
+        )
 
-        if user_input.lower() == "exit":
+        message = response.choices[0].message
+
+        if message.tool_calls:
+            history.append(
+                {
+                    "role": "assistant",
+                    "content": message.content or "",
+                    "tool_calls": [
+                        {
+                            "id": tc.id,
+                            "type": "function",
+                            "function": {
+                                "name": tc.function.name,
+                                "arguments": tc.function.arguments,
+                            },
+                        }
+                        for tc in message.tool_calls
+                    ],
+                }
+            )
+
+            for tool_call in message.tool_calls:
+                func_name = tool_call.function.name
+                arguments = json.loads(tool_call.function.arguments)
+
+                print(f"Calling tool: {func_name}({arguments})")
+
+                result = call_tool(func_name, arguments)
+
+                history.append(
+                    {
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": result,
+                    }
+                )
+
+            continue
+
+        else:
+            assistant_text = message.content
+            history.append({"role": "assistant", "content": assistant_text})
+            return assistant_text
+
+
+def chat():
+    history = [{"role": "system", "content": SYSTEM_PROMPT}]
+
+    print("Field Service AI Assistant (with real data access)")
+    print("Type 'bye' to exit.")
+    print()
+
+    while True:
+        user_input = input("You: ").strip()
+
+        if not user_input:
+            continue
+        if user_input.lower() == "bye":
+            print("\nGoodbye!")
             break
-
-        if user_input.lower() == "history":
-            print("\nHistory")
-            for message in history:
-                print(f"{message['role']}: \n{message['content']}\n")
-            continue
-
-        if user_input.lower() == "clear":
-            history = [{"role": "system", "content": "you're a helpful assistant."}]
-            continue
 
         history.append({"role": "user", "content": user_input})
 
-        response = client.chat.completions.create(
-            model="gemma3:4b",
-            messages=history,
-        )
-
-        assistant_message = response.choices[0].message.content
-
-        history.append({"role": "assistant", "content": assistant_message})
-
-        print(f"\nAssistant: {assistant_message}\n")
+        print()
+        assistant_response = get_response(history)
+        print(f"Assistant: {assistant_response}\n")
 
 
 if __name__ == "__main__":
-    main()
+    chat()
