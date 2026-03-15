@@ -1,5 +1,4 @@
-TOOLS = [
-    # --- Read Tools ---
+READ_TOOLS = [
     {
         "type": "function",
         "function": {
@@ -147,7 +146,9 @@ TOOLS = [
             },
         },
     },
-    # --- Write Tools ---
+]
+
+WRITE_TOOLS = [
     {
         "type": "function",
         "function": {
