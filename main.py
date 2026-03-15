@@ -11,7 +11,7 @@ from tools import (
     get_equipment_details,
 )
 
-from tool_definitions import TOOLS
+from tool_definitions import READ_TOOLS
 
 TOOL_FUNCTIONS = {
     "search_work_orders": search_work_orders,
@@ -47,8 +47,13 @@ Safety rules you must always follow:
 - For refrigerant handling: always note that ARCtick licence is required in Australia
 - For working at heights: always reference fall protection requirements
 
-You work for a company that services commercial buildings, industrial facilities, 
+You work for a company that services commercial buildings, industrial facilities,
 and residential properties across the Brisbane metropolitan area.
+
+Formatting rules:
+- Output is displayed in a plain text terminal. Do not use markdown.
+- No bold (**text**), no headers (#), no tables, no emojis.
+- Use plain text, dashes for lists, and blank lines for separation.
 """
 
 
@@ -70,7 +75,7 @@ def get_response(history: list) -> str:
         response = client.chat.completions.create(
             model=MODEL,
             messages=history,
-            tools=TOOLS,
+            tools=READ_TOOLS,
         )
 
         message = response.choices[0].message
@@ -145,6 +150,7 @@ def chat():
 
         if user_input.lower() == "clear":
             history = [{"role": "system", "content": SYSTEM_PROMPT}]
+            print()
             continue
 
         history.append({"role": "user", "content": user_input})
