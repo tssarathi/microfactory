@@ -1,0 +1,23 @@
+id,part_number,part_name,category,quantity,minimum_stock,unit_cost,supplier
+1,CAP-RUN-45,Run Capacitor 45uF,hvac,7,5,32.5,Gem Electronics
+2,CAP-RUN-35,Run Capacitor 35uF,hvac,3,5,28.0,Gem Electronics
+3,CONT-40A,Contactor 40A 3-Phase,electrical,4,3,45.0,NHP Electrical
+4,REF-R410A,Refrigerant R410A (per kg),refrigeration,22,10,38.0,Heatcraft Australia
+5,FD-083S,Filter Drier 083S,refrigeration,4,3,52.0,Danfoss Australia
+6,FM-300W,Condenser Fan Motor 300W,hvac,0,3,185.0,Regal Beloit
+7,TSTAT-WIFI,Digital Thermostat WiFi,hvac,7,3,89.0,Honeywell
+8,PCB-INV,Inverter Control Board,hvac,1,2,420.0,Daikin Australia
+9,FILT-20x20,Air Filter 20x20 Pleated,hvac,16,10,12.5,Camfil Australia
+10,PTR-15,PTR Valve 15mm,plumbing,5,3,28.5,Reliance Water Controls
+11,SEAL-COOL-STD,Coolroom Door Seal (per metre),refrigeration,0,5,35.0,Austral Refrigeration
+12,EEV-DX,Electronic Expansion Valve,refrigeration,1,2,310.0,Danfoss Australia
+13,BELT-A68,Drive Belt A68,hvac,3,3,22.0,Gates Australia
+14,CB-20A-3P,Circuit Breaker 20A 3-Phase,electrical,10,5,65.0,Schneider Electric
+15,BATT-UPS-12V,UPS Battery 12V 9Ah,electrical,8,4,55.0,Eaton Australia
+16,COMP-OIL-5L,Compressor Oil POE 5L,refrigeration,3,2,78.0,CPI Fluid Engineering
+17,VALVE-BALL-20,Ball Valve 20mm Brass,plumbing,6,4,18.5,Crane Copper
+18,FLEX-DUCT-6,Flexible Duct 150mm (per metre),hvac,12,5,15.0,CSR Edmonds
+19,CABLE-TPS-25,TPS Cable 2.5mm 3-Core (per metre),electrical,45,20,4.8,Prysmian Group
+20,REF-R32,Refrigerant R32 (per kg),refrigeration,8,5,42.0,Heatcraft Australia
+21,GASKET-FLANGE,Flange Gasket Set 50mm,plumbing,2,3,12.0,Flexitallic Australia
+22,SENSOR-NTC,NTC Temperature Sensor 10K,hvac,4,3,24.0,Honeywell

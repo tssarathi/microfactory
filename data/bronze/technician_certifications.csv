@@ -1,0 +1,29 @@
+id,technician_id,cert_type,licence_number,issued_date,expiry_date,issuing_body
+1,1,arctick,ARC-2024-0451,2024-03-15,2027-03-15,Australian Refrigeration Council
+2,1,working_at_heights,WAH-QLD-8823,2024-09-20,2026-09-20,SafeWork QLD
+3,1,first_aid,FA-2025-1102,2025-01-10,2028-01-10,St John Ambulance QLD
+4,2,electrical_licence,EL-QLD-44291,2022-11-30,2027-11-30,QBCC
+5,2,working_at_heights,WAH-QLD-8824,2024-07-15,2026-07-15,SafeWork QLD
+6,2,first_aid,FA-2025-1103,2024-06-22,2027-06-22,St John Ambulance QLD
+7,2,blue_card,BC-2025-99012,2025-05-01,2028-05-01,Queensland Government (DCYJMA)
+8,3,gas_fitting,GF-QLD-7823,2024-04-20,2027-04-20,QBCC
+9,3,confined_space,CS-QLD-3312,2024-08-30,2026-08-30,SafeWork QLD
+10,3,first_aid,FA-2025-1104,2024-11-15,2027-11-15,St John Ambulance QLD
+11,4,electrical_licence,EL-QLD-44350,2023-08-15,2027-08-15,QBCC
+12,4,working_at_heights,WAH-QLD-8830,2024-01-10,2027-01-10,SafeWork QLD
+13,4,first_aid,FA-2025-1105,2025-03-01,2028-03-01,St John Ambulance QLD
+14,5,arctick,ARC-2024-0467,2024-06-01,2027-06-01,Australian Refrigeration Council
+15,5,confined_space,CS-QLD-3320,2024-12-15,2026-12-15,SafeWork QLD
+16,6,gas_fitting,GF-QLD-7856,2024-09-10,2027-09-10,QBCC
+17,6,first_aid,FA-2025-1106,2024-08-20,2027-08-20,St John Ambulance QLD
+18,6,working_at_heights,WAH-QLD-9901,2024-04-10,2026-04-10,SafeWork QLD
+19,7,electrical_licence,EL-QLD-44520,2025-02-01,2028-02-01,QBCC
+20,7,blue_card,BC-2023-88401,2023-11-01,2025-11-01,Queensland Government (DCYJMA)
+21,7,first_aid,FA-2025-1201,2025-06-15,2028-06-15,St John Ambulance QLD
+22,8,arctick,ARC-2025-0512,2025-01-20,2028-01-20,Australian Refrigeration Council
+23,8,first_aid,FA-2025-1202,2025-04-10,2028-04-10,St John Ambulance QLD
+24,9,gas_fitting,GF-QLD-7890,2023-12-01,2026-12-01,QBCC
+25,9,working_at_heights,WAH-QLD-9045,2023-06-30,2025-06-30,SafeWork QLD
+26,9,first_aid,FA-2024-1301,2024-09-01,2027-09-01,St John Ambulance QLD
+27,10,electrical_licence,EL-QLD-44601,2025-09-01,2028-09-01,QBCC
+28,10,confined_space,CS-QLD-3398,2024-01-15,2026-01-15,SafeWork QLD

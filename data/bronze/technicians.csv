@@ -1,0 +1,11 @@
+id,name,phone,email,specializations,service_area,status,vehicle,hourly_rate
+1,Dave Morrison,0411-111-001,dave.morrison@fieldops.com.au,"[""hvac"", ""refrigeration""]",Brisbane North,available,VAN-001,85.0
+2,Sarah Chen,0411-111-002,sarah.chen@fieldops.com.au,"[""electrical"", ""solar""]",Brisbane South,on_job,VAN-002,90.0
+3,Mike O'Sullivan,0411-111-003,mike.osullivan@fieldops.com.au,"[""plumbing"", ""gas_fitting""]",Brisbane East,available,VAN-003,82.0
+4,Raj Patel,0411-111-004,raj.patel@fieldops.com.au,"[""hvac"", ""electrical""]",Brisbane CBD,available,VAN-004,88.0
+5,Emma Watson,0411-111-005,emma.watson@fieldops.com.au,"[""refrigeration"", ""cold_storage""]",Brisbane North,on_leave,VAN-005,92.0
+6,Tom Bradley,0411-111-006,tom.bradley@fieldops.com.au,"[""hvac"", ""plumbing"", ""gas_fitting""]",Brisbane West,available,VAN-006,80.0
+7,Jake Williams,0411-111-007,jake.williams@fieldops.com.au,"[""electrical"", ""solar""]",Brisbane South,available,VAN-007,55.0
+8,Linda Park,0411-111-008,linda.park@fieldops.com.au,"[""hvac"", ""refrigeration""]",Brisbane East,available,VAN-008,85.0
+9,Chris Taylor,0411-111-009,chris.taylor@fieldops.com.au,"[""plumbing"", ""gas_fitting"", ""hvac""]",Brisbane West,on_job,UTE-009,95.0
+10,Anika Sharma,0411-111-010,anika.sharma@fieldops.com.au,"[""electrical""]",Brisbane CBD,available,VAN-010,72.0

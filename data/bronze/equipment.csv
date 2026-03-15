@@ -1,0 +1,29 @@
+id,customer_id,equipment_type,make,model,serial_number,install_date,warranty_expiry,last_service_date,next_service_due,location_notes,status
+1,1,hvac,Daikin,RZQS250,DK-2022-L12-001,2022-06-15,2027-06-15,2025-12-20,2026-03-20,"Level 12, Plant Room B",needs_repair
+2,1,hvac,Daikin,RZQS250,DK-2022-L05-002,2022-06-15,2027-06-15,2025-12-20,2026-06-15,"Level 5, Plant Room A",operational
+3,1,electrical,Eaton,UPS 20kVA,EA-2021-B01-003,2021-03-10,2026-03-10,2025-09-15,2026-04-01,"Basement, Electrical Room",operational
+4,2,refrigeration,Bitzer,4FES-5Y,BZ-2020-KB1-004,2020-11-20,2025-11-20,2025-12-10,2026-03-10,"Kitchen B1, Coolroom 1",needs_repair
+5,2,plumbing,Rheem,Stellar 360,RH-2023-L02-005,2023-02-14,2028-02-14,2025-08-20,2026-07-20,"Level 2, Plant Room",operational
+6,4,refrigeration,Bitzer,CSH8573-140Y,BZ-2019-FHA-006,2019-05-08,2024-05-08,2025-12-01,2026-03-01,"Freezer Hall A, Compressor Bay",needs_repair
+7,4,refrigeration,Bitzer,4NES-20Y,BZ-2021-CR3-007,2021-08-22,2026-08-22,2025-11-15,2026-05-15,Coolroom 3,operational
+8,3,plumbing,Rinnai,Infinity 26,RI-2021-EXT-008,2021-07-03,2026-07-03,2025-03-15,2026-09-01,"External wall, north side",operational
+9,5,hvac,Mitsubishi,MSZ-AP25VG,ME-2023-LR-009,2023-01-18,2028-01-18,2025-07-20,2026-04-15,"Living room, wall mount",needs_repair
+10,6,electrical,Legrand,Emergency Lighting Pack,LG-2022-ALL-010,2022-04-01,2027-04-01,2025-09-25,2026-03-25,"Throughout facility, 24 units",operational
+11,7,electrical,Eaton,93PM 30kW,EA-2023-UPS-011,2023-06-01,2028-06-01,2025-10-15,2026-04-15,UPS Room A,operational
+12,7,hvac,Daikin,ACAS140,DK-2022-SH1-012,2022-09-15,2027-09-15,2025-11-01,2026-05-01,"Server Hall 1, Roof Unit",operational
+13,8,hvac,Daikin,FDYAN100,DK-2020-DU-013,2020-04-10,2025-04-10,2025-09-30,2026-03-30,"Ducted, ceiling space",needs_repair
+14,11,refrigeration,Bitzer,4TES-12Y,BZ-2022-PF-014,2022-01-20,2027-01-20,2025-10-20,2026-04-20,"Production floor, Coolroom 1",operational
+15,12,hvac,Carrier,42VH024,CA-2019-HE-015,2019-11-05,2024-11-05,2025-08-01,2026-08-01,"Ducted, under-floor heritage install",operational
+16,9,hvac,Actron,ESP Plus,AC-2023-FC-016,2023-08-15,2028-08-15,2025-10-01,2026-04-01,"Food Court B, Rooftop Unit 3",operational
+17,9,electrical,ABB,ACS580 VSD,AB-2022-EH-017,2022-03-10,2027-03-10,2025-06-15,2026-06-15,"Exhaust fan motor, Food Court B roof",needs_repair
+18,10,hvac,Fujitsu,ASTG24KMCA,FU-2021-BB-018,2021-02-10,2026-02-10,2025-04-01,2026-04-01,"Block B, Classroom 1-8, 8x split systems",operational
+19,13,hvac,Daikin,ACAS250,DK-2024-WH-019,2024-03-20,2029-03-20,,2025-03-20,"Warehouse ceiling, Unit 1",operational
+20,13,electrical,Fronius,Symo 15.0,FR-2023-RF-020,2023-11-01,2028-11-01,2025-11-01,2026-11-01,Rooftop solar inverter array,operational
+21,14,hvac,Carrier,42VH036,CA-2020-U3-021,2020-06-15,2025-06-15,2025-02-20,2026-02-20,"Unit 3, ceiling cassette",decommissioned
+22,15,hvac,Mitsubishi,MSZ-AP50VG,ME-2024-MBR-022,2024-09-10,2029-09-10,,2025-09-10,"Master bedroom, wall mount",needs_repair
+23,16,hvac,Fujitsu,ARTG36LHTA,FU-2022-GF-023,2022-11-20,2027-11-20,2025-11-20,2026-05-20,"Ground floor, ducted",operational
+24,17,hvac,Daikin,FDYAN140,DK-2023-TH-024,2023-04-01,2028-04-01,2026-01-15,2026-07-15,"Theatre 1 & 2, critical precision cooling",operational
+25,17,electrical,Legrand,Emergency Lighting Pack,LG-2023-ALL-025,2023-04-01,2028-04-01,2025-10-01,2026-04-01,"Throughout facility, 18 units",operational
+26,18,hvac,Mitsubishi,MSZ-AP35VG,ME-2022-LR-026,2022-08-15,2027-08-15,2025-08-15,2026-02-15,"Living room, hi-wall",operational
+27,19,plumbing,Rheem,Stellar 330,RH-2025-EXT-027,2025-06-01,2030-06-01,2025-06-01,2026-06-01,"External wall, east side",operational
+28,20,hvac,Actron,ESP Platinum,AC-2021-RF-028,2021-07-01,2026-07-01,2025-07-01,2026-01-01,"Rooftop plant room, common area HVAC",decommissioned
