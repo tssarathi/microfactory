@@ -121,8 +121,10 @@ def get_response(history: list) -> str:
 def chat():
     history = [{"role": "system", "content": SYSTEM_PROMPT}]
 
-    print("Field Service AI Assistant (with real data access)")
-    print("Type 'bye' to exit.")
+    print()
+    print("Type 'bye' to exit, 'history' to view chat history, 'clear' to reset.")
+    print()
+    print("Hi! I'm your Field Service AI Assistant. How can I help you today?")
     print()
 
     while True:
@@ -131,8 +133,19 @@ def chat():
         if not user_input:
             continue
         if user_input.lower() == "bye":
-            print("\nGoodbye!")
+            print()
+            print("Goodbye!")
+            print()
             break
+
+        if user_input.lower() == "history":
+            for msg in history:
+                print(f"{msg['role']}: \n{msg.get('content', '')}\n")
+            continue
+
+        if user_input.lower() == "clear":
+            history = [{"role": "system", "content": SYSTEM_PROMPT}]
+            continue
 
         history.append({"role": "user", "content": user_input})
 
