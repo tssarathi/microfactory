@@ -14,3 +14,6 @@ wheels/
 
 # docs
 docs/
+
+# test files
+test_embeddings.py
