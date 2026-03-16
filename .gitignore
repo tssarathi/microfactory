@@ -17,3 +17,6 @@ docs/
 
 # test files
 test_embeddings.py
+
+# MCP config
+.mcp.json
