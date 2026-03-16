@@ -3,7 +3,7 @@ import csv
 import os
 from typing import Dict
 
-db_path = "data/silver/field_service.db"
+db_path = "data/silver/database/field_service.db"
 if os.path.exists(db_path):
     os.remove(db_path)
 
@@ -162,4 +162,4 @@ create_table(
 )
 
 conn.close()
-print("Database created at data/silver/field_service.db")
+print("Database created at data/silver/database/field_service.db")

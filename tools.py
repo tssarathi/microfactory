@@ -2,7 +2,7 @@ import sqlite3
 import json
 from datetime import date, datetime
 
-DB_PATH = "data/silver/field_service.db"
+DB_PATH = "data/silver/database/field_service.db"
 
 
 def get_db():
