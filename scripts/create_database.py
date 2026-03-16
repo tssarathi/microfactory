@@ -1,11 +1,11 @@
 import sqlite3
 import csv
-import os
+from pathlib import Path
 from typing import Dict
 
-db_path = "data/silver/database/field_service.db"
-if os.path.exists(db_path):
-    os.remove(db_path)
+db_path = Path("data/silver/database/field_service.db")
+if db_path.exists():
+    db_path.unlink()
 
 conn = sqlite3.connect(db_path)
 cursor = conn.cursor()
@@ -13,7 +13,7 @@ cursor = conn.cursor()
 
 def create_table(table_name: str, columns: Dict[str, str]):
 
-    with open(f"data/bronze/records/{table_name}.csv", encoding="utf-8") as file:
+    with Path(f"data/bronze/records/{table_name}.csv").open(encoding="utf-8") as file:
         reader = csv.DictReader(file)
         rows = list(reader)
 
