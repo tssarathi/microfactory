@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
@@ -11,6 +12,12 @@ ef = OllamaEmbeddingFunction(
     model_name="nomic-embed-text",
     url="http://localhost:11434",
 )
+
+# Clean up orphaned HNSW segment directories
+VECTORS_DIR = Path("data/silver/vectors/")
+for item in VECTORS_DIR.iterdir():
+    if item.is_dir():
+        shutil.rmtree(item)
 
 try:
     client.delete_collection("knowledge_base")
@@ -26,6 +33,8 @@ collection = client.get_or_create_collection(
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=0)
 
 total_chunks = 0
+
+print()
 
 for file in KB_DIR.rglob("*.md"):
     test = file.read_text()
