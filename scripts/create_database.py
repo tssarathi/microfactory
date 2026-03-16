@@ -13,7 +13,7 @@ cursor = conn.cursor()
 
 def create_table(table_name: str, columns: Dict[str, str]):
 
-    with open(f"data/bronze/{table_name}.csv", encoding="utf-8") as file:
+    with open(f"data/bronze/records/{table_name}.csv", encoding="utf-8") as file:
         reader = csv.DictReader(file)
         rows = list(reader)
 
