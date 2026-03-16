@@ -146,6 +146,27 @@ READ_TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "search_knowledge_base",
+            "description": "Search technical manuals, troubleshooting procedures, safety protocols, and company documentation. Use this when the user asks HOW to do something, asks about procedures, safety requirements, maintenance schedules, or best practices. This searches real company documentation, not general knowledge.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "What to search for (e.g., 'AC troubleshooting steps', 'lockout tagout procedure', 'gas leak response')",
+                    },
+                    "n_results": {
+                        "type": "integer",
+                        "description": "Number of results to return (default 3)",
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
 ]
 
 WRITE_TOOLS = [

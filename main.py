@@ -10,6 +10,7 @@ from tools import (
     get_customer_equipment,
     get_equipment_details,
 )
+from rag import search_knowledge
 
 from tool_definitions import READ_TOOLS
 
@@ -21,6 +22,7 @@ TOOL_FUNCTIONS = {
     "get_customer_details": get_customer_details,
     "get_customer_equipment": get_customer_equipment,
     "get_equipment_details": get_equipment_details,
+    "search_knowledge_base": search_knowledge,
 }
 
 client = OpenAI(
@@ -98,6 +100,8 @@ def get_response(history: list) -> str:
                     ],
                 }
             )
+
+            print()
 
             for tool_call in message.tool_calls:
                 func_name = tool_call.function.name
