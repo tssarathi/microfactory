@@ -5,6 +5,7 @@ requires-python = ">=3.14"
 [manifest]
 members = [
     "field-service",
+    "knowledge",
     "knowledge-base",
     "mcp-database",
     "microfactory",
@@ -1808,6 +1809,11 @@ sdist = { url = "https://files.pythonhosted.org/packages/43/4b/674af6ef2f97d56f0
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/db/e655086b7f3a705df045bf0933bdd9c2f79bb3c97bfef1384598bb79a217/keyring-25.7.0-py3-none-any.whl", hash = "sha256:be4a0b195f149690c166e850609a477c532ddbfbaed96a404d4e43f8d5e2689f", size = 39160, upload-time = "2025-11-16T16:26:08.402Z" },
 ]
+
+[[package]]
+name = "knowledge"
+version = "0.1.0"
+source = { virtual = "agents/knowledge" }
 
 [[package]]
 name = "knowledge-base"
