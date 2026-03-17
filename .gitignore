@@ -21,3 +21,9 @@ test_embeddings.py
 
 # MCP config
 .mcp.json
+
+# Google ADK
+*.adk
+
+# Environment variables
+.env
