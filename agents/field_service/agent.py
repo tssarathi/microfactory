@@ -20,7 +20,6 @@ db_toolset = McpToolset(
     tool_filter=[
         "search_work_orders",
         "get_work_order_details",
-        "get_available_technicians",
         "search_parts",
         "get_customer_details",
         "get_customer_equipment",
