@@ -1,3 +1,5 @@
+from typing import Annotated
+
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
 
@@ -11,7 +13,11 @@ ef = OllamaEmbeddingFunction(
 collection = client.get_collection("knowledge_base", embedding_function=ef)
 
 
-def search_knowledge(query: str, n_results: int = 3) -> str:
+def search_knowledge(
+    query: Annotated[str, "What to search for (e.g., 'AC troubleshooting steps', 'lockout tagout procedure', 'gas leak response')."],
+    n_results: Annotated[int, "Number of results to return."] = 3,
+) -> str:
+    """Search technical manuals, troubleshooting procedures, safety protocols, and company documentation. Returns matching excerpts with source references."""
 
     results = collection.query(query_texts=[query], n_results=n_results)
 
