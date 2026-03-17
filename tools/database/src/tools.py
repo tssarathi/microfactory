@@ -1,8 +1,16 @@
 import sqlite3
 import json
 from datetime import date, datetime
+from typing import Annotated, Literal
+from pathlib import Path
 
-DB_PATH = "data/silver/database/field_service.db"
+DB_PATH = (
+    Path(__file__).resolve().parents[3]
+    / "data"
+    / "silver"
+    / "database"
+    / "field_service.db"
+)
 
 
 def get_db():
@@ -12,8 +20,23 @@ def get_db():
 
 
 def search_work_orders(
-    status: str = None, priority: str = None, customer_name: str = None
+    status: Annotated[
+        Literal["open", "assigned", "in_progress", "completed", "cancelled"] | None,
+        "Filter by work order status.",
+    ] = None,
+    priority: Annotated[
+        Literal["low", "medium", "high", "emergency"] | None,
+        "Filter by priority level.",
+    ] = None,
+    customer_name: Annotated[
+        str | None,
+        "Filter by customer name (partial match).",
+    ] = None,
 ) -> str:
+    """Search and filter work orders by status, priority, or customer name.
+    Returns a list of matching work orders.
+    Use this to find multiple work orders — not for fetching a single WO by ID."""
+
     conn = get_db()
     query = """
         SELECT wo.id, wo.title, wo.priority, wo.status, wo.scheduled_date,
@@ -59,7 +82,13 @@ def search_work_orders(
     return "\n".join(results)
 
 
-def get_work_order_details(work_order_id: int) -> str:
+def get_work_order_details(
+    work_order_id: Annotated[int, "The ID of the work order to retrieve."],
+) -> str:
+    """Get the full details of a specific work order by its ID,
+    including equipment, technician, job notes, and parts used.
+    Use this when you already know the work order ID."""
+
     conn = get_db()
     row = conn.execute(
         """SELECT wo.*, c.name as customer_name,
@@ -140,16 +169,15 @@ def get_work_order_details(work_order_id: int) -> str:
     return "\n".join(lines)
 
 
-def get_available_technicians(specialization: str = None) -> str:
-    """
-    Find available technicians, optionally filtered by specialization.
+def get_available_technicians(
+    specialization: Annotated[
+        str | None,
+        "Filter by skill area (e.g. 'hvac', 'electrical', 'plumbing', 'refrigeration').",
+    ] = None,
+) -> str:
+    """Find technicians who are currently available for dispatch.
+    Optionally filter by specialization to match the right skills to the job."""
 
-    Args:
-        specialization: Filter by skill (e.g., "hvac", "electrical", "plumbing")
-
-    Returns:
-        List of available technicians with their skills and areas.
-    """
     conn = get_db()
     rows = conn.execute(
         "SELECT * FROM technicians WHERE status = 'available'"
@@ -177,7 +205,19 @@ def get_available_technicians(specialization: str = None) -> str:
     return "\n".join(results)
 
 
-def search_parts(query: str = None, category: str = None) -> str:
+def search_parts(
+    query: Annotated[
+        str | None,
+        "Free text search across part names and part numbers.",
+    ] = None,
+    category: Annotated[
+        Literal["hvac", "refrigeration", "electrical", "plumbing"] | None,
+        "Filter by parts category.",
+    ] = None,
+) -> str:
+    """Search the parts inventory by keyword or category.
+    Returns part numbers, stock levels, pricing, and flags low/out-of-stock items."""
+
     conn = get_db()
     sql = "SELECT * FROM parts_inventory WHERE 1=1"
     params = []
@@ -220,7 +260,12 @@ def search_parts(query: str = None, category: str = None) -> str:
     return "\n".join(results)
 
 
-def get_customer_details(customer_id: int) -> str:
+def get_customer_details(
+    customer_id: Annotated[int, "The ID of the customer to retrieve."],
+) -> str:
+    """Get the full customer record by ID,
+    including contact info, contract status, priority level, and site notes."""
+
     conn = get_db()
     row = conn.execute(
         "SELECT * FROM customers WHERE id = ?", (customer_id,)
@@ -252,7 +297,12 @@ def get_customer_details(customer_id: int) -> str:
     return "\n".join(lines)
 
 
-def get_customer_equipment(customer_id: int) -> str:
+def get_customer_equipment(
+    customer_id: Annotated[int, "The ID of the customer whose equipment to list."],
+) -> str:
+    """List all equipment installed at a customer site,
+    including service history, warranty status, and location notes."""
+
     conn = get_db()
     rows = conn.execute(
         """SELECT e.*, c.name as customer_name
@@ -288,7 +338,12 @@ def get_customer_equipment(customer_id: int) -> str:
     return "\n".join(lines)
 
 
-def get_equipment_details(equipment_id: int) -> str:
+def get_equipment_details(
+    equipment_id: Annotated[int, "The ID of the equipment to retrieve."],
+) -> str:
+    """Get full details for a single piece of equipment by its ID,
+    including warranty expiry, service status, and overdue flags."""
+
     conn = get_db()
     row = conn.execute(
         """SELECT e.*, c.name as customer_name
@@ -336,12 +391,20 @@ def get_equipment_details(equipment_id: int) -> str:
 
 
 def create_work_order(
-    customer_id: int,
-    title: str,
-    description: str,
-    priority: str,
-    equipment_id: int = None,
+    customer_id: Annotated[int, "The ID of the customer to create the work order for."],
+    title: Annotated[str, "Short title describing the job."],
+    description: Annotated[str, "Detailed description of the work to be done."],
+    priority: Annotated[
+        Literal["low", "medium", "high", "emergency"],
+        "Priority level for the work order.",
+    ],
+    equipment_id: Annotated[
+        int | None,
+        "Optional equipment ID to associate with the work order. Must belong to the specified customer.",
+    ] = None,
 ) -> str:
+    """Create a new work order for a customer.
+    Validates the customer and equipment exist, then creates the order with 'open' status."""
     valid_priorities = ("low", "medium", "high", "emergency")
     if priority not in valid_priorities:
         return f"Invalid priority '{priority}'. Must be one of: {', '.join(valid_priorities)}."
@@ -389,16 +452,24 @@ def create_work_order(
 
 
 def update_work_order(
-    work_order_id: int,
-    status: str = None,
-    priority: str = None,
-    technician_id: int = None,
-    scheduled_date: str = None,
-    diagnosis: str = None,
-    resolution: str = None,
-    estimated_hours: float = None,
-    actual_hours: float = None,
+    work_order_id: Annotated[int, "The ID of the work order to update."],
+    status: Annotated[
+        Literal["open", "assigned", "in_progress", "completed", "cancelled"] | None,
+        "New status for the work order.",
+    ] = None,
+    priority: Annotated[
+        Literal["low", "medium", "high", "emergency"] | None,
+        "New priority level.",
+    ] = None,
+    technician_id: Annotated[int | None, "ID of the technician to assign."] = None,
+    scheduled_date: Annotated[str | None, "Scheduled date in YYYY-MM-DD format."] = None,
+    diagnosis: Annotated[str | None, "Technician's diagnosis of the issue."] = None,
+    resolution: Annotated[str | None, "Description of how the issue was resolved."] = None,
+    estimated_hours: Annotated[float | None, "Estimated hours to complete the job."] = None,
+    actual_hours: Annotated[float | None, "Actual hours spent on the job."] = None,
 ) -> str:
+    """Update fields on an existing work order.
+    Completed work orders cannot be modified. Setting status to 'completed' auto-fills the completed date."""
     conn = get_db()
     row = conn.execute(
         "SELECT * FROM work_orders WHERE id = ?", (work_order_id,)
@@ -466,7 +537,16 @@ def update_work_order(
     return "\n".join(lines)
 
 
-def add_job_note(work_order_id: int, note_type: str, content: str) -> str:
+def add_job_note(
+    work_order_id: Annotated[int, "The ID of the work order to add the note to."],
+    note_type: Annotated[
+        Literal["arrival", "diagnosis", "update", "departure", "parts_request", "customer_contact"],
+        "The type of job note.",
+    ],
+    content: Annotated[str, "The note content."],
+) -> str:
+    """Add a timestamped job note to a work order.
+    The note is automatically associated with the work order's assigned technician."""
     valid_types = (
         "arrival",
         "diagnosis",
