@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Annotated, Literal
 from pathlib import Path
 
@@ -390,6 +390,313 @@ def get_equipment_details(
     return "\n".join(lines)
 
 
+def get_technician_details(
+    technician_id: Annotated[int, "The ID of the technician to retrieve."],
+) -> str:
+    """Get the full profile of a technician by ID,
+    including specializations, service area, status, and hourly rate."""
+
+    conn = get_db()
+    row = conn.execute(
+        "SELECT * FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    conn.close()
+
+    if not row:
+        return f"Technician {technician_id} not found."
+
+    specs = ", ".join(json.loads(row["specializations"]))
+
+    lines = [
+        f"Technician: {row['name']}",
+        f"Phone: {row['phone']}",
+        f"Email: {row['email']}",
+        f"Specializations: {specs}",
+        f"Service area: {row['service_area']}",
+        f"Status: {row['status']}",
+        f"Hourly rate: ${row['hourly_rate']:.2f}",
+    ]
+
+    return "\n".join(lines)
+
+
+def get_technician_schedule(
+    technician_id: Annotated[int, "The ID of the technician."],
+    start_date: Annotated[str, "Start date in YYYY-MM-DD format."],
+    end_date: Annotated[str, "End date in YYYY-MM-DD format."],
+) -> str:
+    """Get a technician's schedule entries within a date range.
+    Shows time blocks, schedule type, linked work orders, and notes."""
+
+    conn = get_db()
+
+    tech = conn.execute(
+        "SELECT name FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    if not tech:
+        conn.close()
+        return f"Technician {technician_id} not found."
+
+    rows = conn.execute(
+        """SELECT s.*, wo.title as wo_title
+           FROM schedules s
+           LEFT JOIN work_orders wo ON s.work_order_id = wo.id
+           WHERE s.technician_id = ? AND s.date BETWEEN ? AND ?
+           ORDER BY s.date, s.start_time""",
+        (technician_id, start_date, end_date),
+    ).fetchall()
+    conn.close()
+
+    if not rows:
+        return f"No schedule entries for {tech['name']} between {start_date} and {end_date}."
+
+    lines = [f"Schedule for {tech['name']} ({start_date} to {end_date}):"]
+    for row in rows:
+        parts = [f"  {row['date']}"]
+        if row["start_time"] and row["end_time"]:
+            parts.append(f"{row['start_time']}-{row['end_time']}")
+        parts.append(f"({row['schedule_type']})")
+        if row["wo_title"]:
+            parts.append(f"WO: {row['wo_title']}")
+        if row["notes"]:
+            parts.append(f"— {row['notes']}")
+        lines.append(" | ".join(parts))
+
+    return "\n".join(lines)
+
+
+def get_technician_certifications(
+    technician_id: Annotated[int, "The ID of the technician."],
+) -> str:
+    """List all certifications held by a technician,
+    with expiry dates and flags for expired or soon-to-expire certs."""
+
+    conn = get_db()
+
+    tech = conn.execute(
+        "SELECT name FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    if not tech:
+        conn.close()
+        return f"Technician {technician_id} not found."
+
+    rows = conn.execute(
+        """SELECT * FROM technician_certifications
+           WHERE technician_id = ?
+           ORDER BY cert_type""",
+        (technician_id,),
+    ).fetchall()
+    conn.close()
+
+    if not rows:
+        return f"No certifications on record for {tech['name']}."
+
+    today_str = str(date.today())
+    thirty_days_str = str(date.today() + timedelta(days=30))
+
+    lines = [f"Certifications for {tech['name']}:"]
+    for row in rows:
+        flags = []
+        if row["expiry_date"] < today_str:
+            flags.append("[EXPIRED]")
+        elif row["expiry_date"] <= thirty_days_str:
+            flags.append("[EXPIRING SOON]")
+
+        flag_str = " ".join(flags) + " " if flags else ""
+        lines.append(
+            f"  {flag_str}{row['cert_type']} | #{row['licence_number']} | "
+            f"Issued: {row['issued_date']} | Expires: {row['expiry_date']}"
+        )
+
+    return "\n".join(lines)
+
+
+def check_certification_compliance(
+    technician_id: Annotated[int, "The ID of the technician to check."],
+    work_order_id: Annotated[int, "The ID of the work order to check against."],
+) -> str:
+    """Check if a technician holds all certifications required for a work order.
+    Determines required certs from equipment type and customer site notes.
+    Returns COMPLIANT or NON-COMPLIANT with details."""
+
+    conn = get_db()
+
+    tech = conn.execute(
+        "SELECT name FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    if not tech:
+        conn.close()
+        return f"Technician {technician_id} not found."
+
+    wo = conn.execute(
+        """SELECT wo.*, c.site_notes, e.equipment_type
+           FROM work_orders wo
+           JOIN customers c ON wo.customer_id = c.id
+           LEFT JOIN equipment e ON wo.equipment_id = e.id
+           WHERE wo.id = ?""",
+        (work_order_id,),
+    ).fetchone()
+    if not wo:
+        conn.close()
+        return f"Work order {work_order_id} not found."
+
+    # Determine required certifications
+    required = {}
+    equipment_type = (wo["equipment_type"] or "").lower()
+    site_notes = (wo["site_notes"] or "").lower()
+    description = (wo["description"] or "").lower()
+    title = (wo["title"] or "").lower()
+    combined_text = f"{description} {title} {site_notes}"
+
+    if equipment_type in ("refrigeration", "cold_storage"):
+        required["arctick"] = f"equipment type is {equipment_type}"
+    if "blue card" in site_notes:
+        required["blue_card"] = "customer site requires blue card"
+    if equipment_type == "electrical":
+        required["electrical_licence"] = f"equipment type is {equipment_type}"
+    if equipment_type in ("gas", "gas_fitting"):
+        required["gas_fitting"] = f"equipment type is {equipment_type}"
+    if any(kw in combined_text for kw in ("roof", "elevated", "height")):
+        required["working_at_heights"] = "work involves heights"
+    if any(kw in combined_text for kw in ("confined", "tank", "pit")):
+        required["confined_space"] = "work involves confined space"
+
+    if not required:
+        conn.close()
+        return (
+            f"COMPLIANT — No specific certifications required for WO-{work_order_id:03d}. "
+            f"{tech['name']} can proceed."
+        )
+
+    # Check tech's certs
+    certs = conn.execute(
+        """SELECT cert_type, expiry_date FROM technician_certifications
+           WHERE technician_id = ?""",
+        (technician_id,),
+    ).fetchall()
+    conn.close()
+
+    today_str = str(date.today())
+    cert_map = {c["cert_type"]: c["expiry_date"] for c in certs}
+
+    results = []
+    all_pass = True
+    for cert_type, reason in required.items():
+        expiry = cert_map.get(cert_type)
+        if not expiry:
+            results.append(f"  MISSING: {cert_type} — required because {reason}")
+            all_pass = False
+        elif expiry < today_str:
+            results.append(
+                f"  EXPIRED: {cert_type} (expired {expiry}) — required because {reason}"
+            )
+            all_pass = False
+        else:
+            results.append(f"  VALID: {cert_type} (expires {expiry})")
+
+    header = "COMPLIANT" if all_pass else "NON-COMPLIANT"
+    lines = [
+        f"{header} — {tech['name']} for WO-{work_order_id:03d}:",
+        *results,
+    ]
+
+    if not all_pass:
+        lines.append(
+            f"\n  Recommendation: Do not assign {tech['name']} to this work order. "
+            f"Find an alternative technician with valid certifications."
+        )
+
+    return "\n".join(lines)
+
+
+def search_available_slots(
+    target_date: Annotated[str, "Date to search in YYYY-MM-DD format."],
+    specialization: Annotated[
+        str | None,
+        "Filter by skill area (e.g. 'hvac', 'electrical').",
+    ] = None,
+    min_hours: Annotated[
+        int,
+        "Minimum free hours required in the slot.",
+    ] = 2,
+) -> str:
+    """Find technicians with free time blocks on a given date.
+    Excludes techs on leave. Optionally filters by specialization."""
+
+    conn = get_db()
+
+    techs = conn.execute(
+        "SELECT * FROM technicians WHERE status != 'on_leave'"
+    ).fetchall()
+
+    if specialization:
+        techs = [
+            t for t in techs
+            if specialization.lower() in json.loads(t["specializations"])
+        ]
+
+    if not techs:
+        conn.close()
+        spec_msg = f" with specialization '{specialization}'" if specialization else ""
+        return f"No technicians found{spec_msg}."
+
+    results = []
+    for tech in techs:
+        # Check if tech has leave on this date
+        leave = conn.execute(
+            """SELECT 1 FROM schedules
+               WHERE technician_id = ? AND date = ? AND schedule_type = 'leave'""",
+            (tech["id"], target_date),
+        ).fetchone()
+        if leave:
+            continue
+
+        # Get scheduled blocks for this date
+        blocks = conn.execute(
+            """SELECT start_time, end_time FROM schedules
+               WHERE technician_id = ? AND date = ?
+               AND schedule_type != 'leave'
+               ORDER BY start_time""",
+            (tech["id"], target_date),
+        ).fetchall()
+
+        # Calculate gaps in a 07:00-18:00 workday
+        workday_start = 7
+        workday_end = 18
+        free_slots = []
+        current = workday_start
+
+        for block in blocks:
+            block_start = int(block["start_time"].split(":")[0])
+            block_end = int(block["end_time"].split(":")[0])
+            if block_start > current:
+                gap = block_start - current
+                if gap >= min_hours:
+                    free_slots.append(f"{current:02d}:00-{block_start:02d}:00 ({gap}h)")
+            current = max(current, block_end)
+
+        if current < workday_end:
+            gap = workday_end - current
+            if gap >= min_hours:
+                free_slots.append(f"{current:02d}:00-{workday_end:02d}:00 ({gap}h)")
+
+        if free_slots:
+            specs = ", ".join(json.loads(tech["specializations"]))
+            slots_str = ", ".join(free_slots)
+            results.append(
+                f"{tech['name']} | {specs} | {tech['service_area']} | "
+                f"Available: {slots_str}"
+            )
+
+    conn.close()
+
+    if not results:
+        return f"No technicians with {min_hours}+ hour free slots on {target_date}."
+
+    lines = [f"Available slots on {target_date} (min {min_hours}h):"] + results
+    return "\n".join(lines)
+
+
 def create_work_order(
     customer_id: Annotated[int, "The ID of the customer to create the work order for."],
     title: Annotated[str, "Short title describing the job."],
@@ -583,6 +890,148 @@ def add_job_note(
     )
 
 
+def schedule_job(
+    technician_id: Annotated[int, "The ID of the technician."],
+    work_order_id: Annotated[int, "The ID of the work order."],
+    scheduled_date: Annotated[str, "Date in YYYY-MM-DD format."],
+    start_time: Annotated[str, "Start time in HH:MM format."],
+    end_time: Annotated[str, "End time in HH:MM format."],
+    notes: Annotated[str | None, "Optional notes for the schedule entry."] = None,
+) -> str:
+    """Create a schedule entry linking a technician to a work order on a specific date and time.
+    Sets schedule_type to 'job'. Validates tech and WO exist. Checks for time conflicts."""
+
+    conn = get_db()
+
+    tech = conn.execute(
+        "SELECT name FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    if not tech:
+        conn.close()
+        return f"Technician {technician_id} not found."
+
+    wo = conn.execute(
+        "SELECT id, title FROM work_orders WHERE id = ?", (work_order_id,)
+    ).fetchone()
+    if not wo:
+        conn.close()
+        return f"Work order {work_order_id} not found."
+
+    # Check for time conflicts
+    conflict = conn.execute(
+        """SELECT * FROM schedules
+           WHERE technician_id = ? AND date = ?
+           AND start_time < ? AND end_time > ?""",
+        (technician_id, scheduled_date, end_time, start_time),
+    ).fetchone()
+    if conflict:
+        conn.close()
+        return (
+            f"Scheduling conflict: {tech['name']} already has "
+            f"{conflict['schedule_type']} scheduled {conflict['start_time']}-{conflict['end_time']} "
+            f"on {scheduled_date}."
+        )
+
+    conn.execute(
+        """INSERT INTO schedules (technician_id, work_order_id, date, start_time, end_time,
+           schedule_type, notes)
+           VALUES (?, ?, ?, ?, ?, 'job', ?)""",
+        (technician_id, work_order_id, scheduled_date, start_time, end_time, notes),
+    )
+    conn.commit()
+    conn.close()
+
+    return (
+        f"Scheduled {tech['name']} for WO-{work_order_id:03d} on {scheduled_date} "
+        f"{start_time}-{end_time}."
+    )
+
+
+def assign_technician(
+    work_order_id: Annotated[int, "The ID of the work order."],
+    technician_id: Annotated[int, "The ID of the technician to assign."],
+) -> str:
+    """Assign a technician to a work order by updating the technician_id field.
+    Does NOT validate certifications — the agent must check compliance before calling this."""
+
+    conn = get_db()
+
+    wo = conn.execute(
+        "SELECT id, title, status FROM work_orders WHERE id = ?", (work_order_id,)
+    ).fetchone()
+    if not wo:
+        conn.close()
+        return f"Work order {work_order_id} not found."
+
+    if wo["status"] == "completed":
+        conn.close()
+        return "Cannot modify completed work orders."
+
+    tech = conn.execute(
+        "SELECT name FROM technicians WHERE id = ?", (technician_id,)
+    ).fetchone()
+    if not tech:
+        conn.close()
+        return f"Technician {technician_id} not found."
+
+    conn.execute(
+        "UPDATE work_orders SET technician_id = ?, status = 'assigned' WHERE id = ?",
+        (technician_id, work_order_id),
+    )
+    conn.commit()
+    conn.close()
+
+    return (
+        f"Assigned {tech['name']} to WO-{work_order_id:03d} ({wo['title']}). "
+        f"Status updated to 'assigned'."
+    )
+
+
+def update_schedule(
+    schedule_id: Annotated[int, "The ID of the schedule entry to update."],
+    scheduled_date: Annotated[str | None, "New date in YYYY-MM-DD format."] = None,
+    start_time: Annotated[str | None, "New start time in HH:MM format."] = None,
+    end_time: Annotated[str | None, "New end time in HH:MM format."] = None,
+    notes: Annotated[str | None, "Updated notes."] = None,
+) -> str:
+    """Update an existing schedule entry. Only provided fields are modified."""
+
+    conn = get_db()
+
+    row = conn.execute(
+        "SELECT * FROM schedules WHERE id = ?", (schedule_id,)
+    ).fetchone()
+    if not row:
+        conn.close()
+        return f"Schedule entry {schedule_id} not found."
+
+    updates = {}
+    if scheduled_date is not None:
+        updates["date"] = scheduled_date
+    if start_time is not None:
+        updates["start_time"] = start_time
+    if end_time is not None:
+        updates["end_time"] = end_time
+    if notes is not None:
+        updates["notes"] = notes
+
+    if not updates:
+        conn.close()
+        return "No fields provided to update."
+
+    set_clause = ", ".join(f"{k} = ?" for k in updates)
+    values = list(updates.values())
+    values.append(schedule_id)
+
+    conn.execute(f"UPDATE schedules SET {set_clause} WHERE id = ?", values)
+    conn.commit()
+    conn.close()
+
+    changes = [f"  {k}: {row[k]} -> {v}" for k, v in updates.items()]
+    lines = [f"Updated schedule entry {schedule_id}:"] + changes
+    return "\n".join(lines)
+
+
 if __name__ == "__main__":
     print('Tool: search_work_orders(status="in_progress", customer_name="Eagle")\n')
     print(search_work_orders(status="in_progress", customer_name="Eagle"))
@@ -604,3 +1053,21 @@ if __name__ == "__main__":
     print()
     print("Tool: get_equipment_details(equipment_id=1)\n")
     print(get_equipment_details(1))
+    print()
+    print("Tool: get_technician_details(technician_id=1)\n")
+    print(get_technician_details(1))
+    print()
+    print('Tool: get_technician_schedule(technician_id=1, start_date="2026-03-14", end_date="2026-03-18")\n')
+    print(get_technician_schedule(1, "2026-03-14", "2026-03-18"))
+    print()
+    print("Tool: get_technician_certifications(technician_id=7)\n")
+    print(get_technician_certifications(7))
+    print()
+    print("Tool: check_certification_compliance(technician_id=7, work_order_id=12)\n")
+    print(check_certification_compliance(7, 12))
+    print()
+    print("Tool: check_certification_compliance(technician_id=1, work_order_id=3)\n")
+    print(check_certification_compliance(1, 3))
+    print()
+    print('Tool: search_available_slots(target_date="2026-03-14", specialization="hvac", min_hours=2)\n')
+    print(search_available_slots("2026-03-14", specialization="hvac", min_hours=2))
