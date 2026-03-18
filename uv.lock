@@ -38,14 +38,12 @@ source = { virtual = "agents" }
 dependencies = [
     { name = "google-adk", extra = ["a2a"] },
     { name = "litellm" },
-    { name = "mcp" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "google-adk", extras = ["a2a"], specifier = ">=1.27.1" },
     { name = "litellm", specifier = ">=1.82.3" },
-    { name = "mcp" },
 ]
 
 [[package]]
@@ -2222,7 +2220,6 @@ dependencies = [
     { name = "chromadb" },
     { name = "langchain-text-splitters" },
     { name = "ollama" },
-    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -2230,7 +2227,6 @@ requires-dist = [
     { name = "chromadb", specifier = ">=1.5.5" },
     { name = "langchain-text-splitters", specifier = ">=1.1.1" },
     { name = "ollama", specifier = ">=0.6.1" },
-    { name = "python-dotenv", specifier = ">=1.2.2" },
 ]
 
 [[package]]
