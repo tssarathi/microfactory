@@ -2,10 +2,6 @@ import os
 import shutil
 from pathlib import Path
 
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
 from langchain_text_splitters import RecursiveCharacterTextSplitter
