@@ -1,22 +1,14 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools.mcp_tool import McpToolset
-from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
-from mcp import StdioServerParameters
-from pathlib import Path
-
+from google.adk.tools.mcp_tool import McpToolset, StreamableHTTPConnectionParams
+import os
 
 from .instruction import INSTRUCTION
 
-TOOLS_DIR = Path(__file__).resolve().parents[2] / "tools"
+KNOWLEDGE_MCP_URL = os.getenv("KNOWLEDGE_MCP_URL", "http://localhost:5002/mcp")
 
 kb_toolset = McpToolset(
-    connection_params=StdioConnectionParams(
-        server_params=StdioServerParameters(
-            command="uv",
-            args=["run", "python", str(TOOLS_DIR / "knowledge_base/server.py")],
-        ),
-    ),
+    connection_params=StreamableHTTPConnectionParams(url=KNOWLEDGE_MCP_URL),
     tool_filter=[
         "search_knowledge_base",
         "get_article",
