@@ -33,4 +33,5 @@ root_agent = Agent(
     description="Manages work orders, equipment, parts inventory, and technical context for field service operations.",
     instruction=INSTRUCTION,
     tools=[db_toolset],
+    disallow_transfer_to_peers=True,
 )

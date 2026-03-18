@@ -32,4 +32,5 @@ root_agent = Agent(
     "troubleshooting steps, and technical documentation lookups.",
     instruction=INSTRUCTION,
     tools=[kb_toolset],
+    disallow_transfer_to_peers=True,
 )
