@@ -1,11 +1,46 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-
-from field_service.agent import root_agent as field_service_agent
-from scheduling.agent import root_agent as scheduling_agent
-from knowledge.agent import root_agent as knowledge_agent
+from google.adk.agents.remote_a2a_agent import (
+    RemoteA2aAgent,
+    AGENT_CARD_WELL_KNOWN_PATH,
+)
 
 from .instruction import INSTRUCTION
+
+field_service_agent = RemoteA2aAgent(
+    name="field_service_agent",
+    description=(
+        "Field service operations specialist. Manages work orders, equipment "
+        "records, parts inventory, and customer context for HVAC, electrical, "
+        "plumbing, and refrigeration service jobs. Use this agent for work order "
+        "lookups, equipment warranty and service history, parts stock checks, "
+        "customer details, and cross-referencing parts usage across jobs."
+    ),
+    agent_card=f"http://localhost:8001{AGENT_CARD_WELL_KNOWN_PATH}",
+)
+
+scheduling_agent = RemoteA2aAgent(
+    name="scheduling_agent",
+    description=(
+        "Scheduling and dispatch advisory. Manages technician availability, "
+        "schedule lookups, certification compliance checks, and dispatch "
+        "recommendations for HVAC, electrical, plumbing, and refrigeration "
+        "field service operations."
+    ),
+    agent_card=f"http://localhost:8002{AGENT_CARD_WELL_KNOWN_PATH}",
+)
+
+knowledge_agent = RemoteA2aAgent(
+    name="knowledge_agent",
+    description=(
+        "Technical knowledge specialist. Handles troubleshooting procedures, "
+        "safety protocols, preventive maintenance schedules, Australian Standards "
+        "references, and company SOPs for HVAC, electrical, plumbing, and "
+        "refrigeration. Use this agent for HOW-TO questions, safety procedures, "
+        "troubleshooting steps, and technical documentation lookups."
+    ),
+    agent_card=f"http://localhost:8003{AGENT_CARD_WELL_KNOWN_PATH}",
+)
 
 root_agent = Agent(
     model=LiteLlm(model="openai/qwen3.5:9b"),
