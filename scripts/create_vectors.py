@@ -42,7 +42,12 @@ for file in KB_DIR.rglob("*.md"):
     ids = [f"{file.stem}__chunk_{i}" for i in range(len(chunks))]
 
     metadatas = [
-        {"source": file.stem, "chunk_index": i, "total_chunks": len(chunks)}
+        {
+            "source": file.stem,
+            "chunk_index": i,
+            "total_chunks": len(chunks),
+            "category": file.parent.name,
+        }
         for i in range(len(chunks))
     ]
 
