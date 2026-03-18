@@ -1,9 +1,11 @@
 [project]
-name = "mcp-database"
+name = "agents"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "fastmcp>=3.1.1",
+    "google-adk>=1.27.1",
+    "litellm>=1.82.3",
+    "mcp",
 ]
