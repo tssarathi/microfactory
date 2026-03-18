@@ -12,37 +12,56 @@ This project demonstrates the AI Factory approach: autonomous agentic teams oper
 
 ## Architecture
 
-```
-                         ┌──────────────────────┐
-                         │  Coordinator  :8004  │
-                         └───┬──────┬────────┬──┘
-                             │      │        │
-                           A2A     A2A      A2A
-                             │      │        │
-          ┌──────────────────┘      │        └────────┐
-          v                         v                 v
-┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
-│ Field Service     │ │ Scheduling        │ │ Knowledge         │
-│ :8001             │ │ :8002             │ │ :8003             │
-└─────────┬─────────┘ └─────────┬─────────┘ └─────────┬─────────┘
-          │                     │                     │
-         MCP                  MCP                    MCP
-          │                     │                     │
-          └──────────┬──────────┘                     │
-                     v                                v
-  ┌────────────────────────────────┐ ┌───────────────────────────┐
-  │ Database MCP Server  :5001     │ │ Knowledge Base MCP Server │
-  │ 18 tools                       │ │ :5002  |  3 tools         │
-  └───────────────┬────────────────┘ └──────────────┬────────────┘
-                  v                                 v
-  ┌────────────────────────────────┐ ┌───────────────────────────┐
-  │ SQLite                         │ │ ChromaDB  :8000           │
-  │ 9 tables  |  222 records       │ │ 25 documents              │
-  └────────────────────────────────┘ └───────────────────────────┘
+```mermaid
+graph TD
+    subgraph orchestration ["Orchestration"]
+        COORD(["Coordinator :8004<br>Query routing · Response synthesis"])
+    end
 
-  Ollama (:11434)    qwen3.5:9b (agents) + nomic-embed-text (embeddings)
-  Docker Compose     7 containerised services
+    subgraph agents ["Specialist Agents"]
+        FS("Field Service :8001<br>Work orders · Equipment · Parts")
+        SCHED("Scheduling :8002<br>Dispatch · Compliance · Availability")
+        KNOW("Knowledge :8003<br>Procedures · Safety · Standards")
+    end
+
+    subgraph tools ["Tool Servers"]
+        DB_MCP["Database MCP :5001<br>18 tools · read + write"]
+        KB_MCP["Knowledge Base MCP :5002<br>3 tools · search + retrieval"]
+    end
+
+    subgraph data ["Data"]
+        SQLITE[("SQLite<br>9 tables · 222 records")]
+        CHROMA[("ChromaDB :8000<br>25 documents")]
+    end
+
+    OLLAMA{{"Ollama :11434<br>qwen3.5:9b · nomic-embed-text"}}
+
+    COORD -->|"A2A"| FS
+    COORD -->|"A2A"| SCHED
+    COORD -->|"A2A"| KNOW
+
+    FS -->|"MCP"| DB_MCP
+    SCHED -->|"MCP"| DB_MCP
+    KNOW -->|"MCP"| KB_MCP
+
+    DB_MCP --> SQLITE
+    KB_MCP --> CHROMA
+    KB_MCP -. "embeddings" .-> OLLAMA
+
+    classDef coord fill:#1a5276,stroke:#154360,color:#fff,stroke-width:2px
+    classDef agent fill:#117a65,stroke:#0e6655,color:#fff,stroke-width:2px
+    classDef tool fill:#b7950b,stroke:#9a7d0a,color:#fff,stroke-width:2px
+    classDef store fill:#5d6d7e,stroke:#4a5a6b,color:#fff,stroke-width:2px
+    classDef infra fill:#6c3483,stroke:#5b2c6f,color:#fff,stroke-width:2px
+
+    class COORD coord
+    class FS,SCHED,KNOW agent
+    class DB_MCP,KB_MCP tool
+    class SQLITE,CHROMA store
+    class OLLAMA infra
 ```
+
+> **7 containerised services** via Docker Compose · All inference runs locally through **Ollama** via LiteLLM · Agents communicate over **A2A protocol** · Tools accessed via **MCP** (StreamableHTTP)
 
 ## Agents
 
