@@ -139,7 +139,7 @@ Entity relationships:
 
 ## Knowledge Base
 
-25 markdown documents embedded via `nomic-embed-text` into ChromaDB. Collection: `knowledge_base`, cosine similarity, 400-character chunks with no overlap. Not yet connected to an agent — standalone infrastructure.
+25 markdown documents embedded via `nomic-embed-text` into ChromaDB. Collection: `knowledge_base`, cosine similarity, 400-character chunks with no overlap. Connected to the Knowledge Agent via the Knowledge Base MCP server.
 
 ### Documents by category
 
