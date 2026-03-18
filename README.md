@@ -14,33 +14,31 @@ This project demonstrates the AI Factory approach: autonomous agentic teams oper
 
 ```mermaid
 flowchart TD
-    USER("User")
+    subgraph orchestration ["Orchestration"]
+        COORD(["Coordinator :8004<br>Query routing · Response synthesis"])
+    end
 
-    subgraph docker ["Docker Compose · 7 Services"]
-        subgraph orch ["Orchestration · Google ADK"]
-            COORD(["Coordinator :8004<br>Query routing · Multi-agent synthesis"])
-        end
+    subgraph agents ["Specialist Agents"]
+        direction LR
+        FS("Field Service :8001<br>Work orders · Equipment · Parts")
+        SCHED("Scheduling :8002<br>Dispatch · Compliance · Availability")
+        KNOW("Knowledge :8003<br>Procedures · Safety · Standards")
+    end
 
-        subgraph agents ["Specialist Agents · Google ADK · A2A"]
-            FS("Field Service :8001<br>Work orders · Equipment · Parts")
-            SCHED("Scheduling :8002<br>Dispatch · Compliance · Availability")
-            KNOW("Knowledge :8003<br>Procedures · Safety · Standards")
-        end
+    subgraph tools ["Tool Servers"]
+        direction LR
+        DB_MCP["Database MCP :5001<br>18 tools · read + write"]
+        KB_MCP["Knowledge Base MCP :5002<br>3 tools · search + retrieval"]
+    end
 
-        subgraph tools ["Tool Servers · FastMCP · StreamableHTTP"]
-            DB_MCP["Database MCP :5001<br>18 tools · read + write"]
-            KB_MCP["Knowledge Base MCP :5002<br>3 tools · search + retrieval"]
-        end
-
-        subgraph data ["Data"]
-            SQLITE[("SQLite<br>9 tables · 222 records")]
-            CHROMA[("ChromaDB :8000<br>25 documents")]
-        end
+    subgraph data ["Data"]
+        direction LR
+        SQLITE[("SQLite<br>9 tables · 222 records")]
+        CHROMA[("ChromaDB :8000<br>25 documents")]
     end
 
     OLLAMA{{"Ollama :11434<br>qwen3.5:9b · nomic-embed-text"}}
 
-    USER --> COORD
     COORD -->|"A2A"| FS
     COORD -->|"A2A"| SCHED
     COORD -->|"A2A"| KNOW
@@ -53,18 +51,12 @@ flowchart TD
     KB_MCP --> CHROMA
     KB_MCP -. "embeddings" .-> OLLAMA
 
-    FS ~~~ SCHED ~~~ KNOW
-    DB_MCP ~~~ KB_MCP
-    SQLITE ~~~ CHROMA
+    classDef coord fill:#1a5276,stroke:#154360,color:#fff,stroke-width:2px
+    classDef agent fill:#117a65,stroke:#0e6655,color:#fff,stroke-width:2px
+    classDef tool fill:#b7950b,stroke:#9a7d0a,color:#fff,stroke-width:2px
+    classDef store fill:#5d6d7e,stroke:#4a5a6b,color:#fff,stroke-width:2px
+    classDef infra fill:#6c3483,stroke:#5b2c6f,color:#fff,stroke-width:2px
 
-    classDef user fill:#f1f5f9,stroke:#94a3b8,color:#1e293b,stroke-width:2px
-    classDef coord fill:#1e40af,stroke:#1e3a8a,color:#fff,stroke-width:2px
-    classDef agent fill:#6d28d9,stroke:#5b21b6,color:#fff,stroke-width:2px
-    classDef tool fill:#b45309,stroke:#92400e,color:#fff,stroke-width:2px
-    classDef store fill:#047857,stroke:#065f46,color:#fff,stroke-width:2px
-    classDef infra fill:#be123c,stroke:#9f1239,color:#fff,stroke-width:2px
-
-    class USER user
     class COORD coord
     class FS,SCHED,KNOW agent
     class DB_MCP,KB_MCP tool
