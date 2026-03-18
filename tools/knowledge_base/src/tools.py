@@ -1,17 +1,13 @@
 import os
 from typing import Annotated
-
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
 
-CHROMA_HOST = os.environ["CHROMA_HOST"]
-CHROMA_PORT = int(os.environ["CHROMA_PORT"])
-OLLAMA_HOST = os.environ["OLLAMA_HOST"]
-OLLAMA_PORT = os.environ["OLLAMA_PORT"]
+
+CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
+CHROMA_PORT = int(os.getenv("CHROMA_PORT", "8000"))
+OLLAMA_HOST = os.getenv("OLLAMA_HOST", "localhost")
+OLLAMA_PORT = os.getenv("OLLAMA_PORT", "11434")
 
 client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
@@ -24,7 +20,10 @@ collection = client.get_collection("knowledge_base", embedding_function=ef)
 
 
 def search_knowledge_base(
-    query: Annotated[str, "What to search for (e.g., 'AC troubleshooting steps', 'lockout tagout procedure', 'gas leak response')."],
+    query: Annotated[
+        str,
+        "What to search for (e.g., 'AC troubleshooting steps', 'lockout tagout procedure', 'gas leak response').",
+    ],
     n_results: Annotated[int, "Number of results to return."] = 3,
 ) -> str:
     """Search technical manuals, troubleshooting procedures, safety protocols, and company documentation. Returns matching excerpts with source references."""
@@ -42,7 +41,9 @@ def search_knowledge_base(
 
 
 def get_article(
-    source: Annotated[str, "Exact source name of the article (e.g., 'gas_leak_emergency_response')."],
+    source: Annotated[
+        str, "Exact source name of the article (e.g., 'gas_leak_emergency_response')."
+    ],
 ) -> str:
     """Retrieve the full text of a specific knowledge base article by its source name."""
 
@@ -64,7 +65,10 @@ def get_article(
 
 
 def list_articles(
-    category: Annotated[str | None, "Filter by category (e.g., 'safety', 'maintenance'). Leave empty to list all."] = None,
+    category: Annotated[
+        str | None,
+        "Filter by category (e.g., 'safety', 'maintenance'). Leave empty to list all.",
+    ] = None,
 ) -> str:
     """List all available knowledge base articles, optionally filtered by category."""
 
@@ -93,19 +97,3 @@ def list_articles(
             lines.append(f"  - {source}")
 
     return "\n".join(lines).strip()
-
-
-if __name__ == "__main__":
-    print()
-    print("Test: search_knowledge_base")
-    print(search_knowledge_base("how to troubleshoot an AC that is not cooling"))
-    print()
-    print("Test: get_article")
-    print(get_article("gas_leak_emergency_response"))
-    print()
-    print("Test: list_articles")
-    print(list_articles())
-    print()
-    print("Test: list_articles('safety')")
-    print(list_articles("safety"))
-    print()
