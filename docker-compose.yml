@@ -8,5 +8,137 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - ANONYMIZED_TELEMETRY=FALSE
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8000'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
     restart: unless-stopped
-    
+
+  database-mcp:
+    build:
+      context: .
+      dockerfile: tools/database/Dockerfile
+    ports: ["5001:5001"]
+    volumes:
+      - ./data/silver/database:/data
+    environment:
+      DB_PATH: /data/field_service.db
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://localhost:5001/mcp"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  knowledge-mcp:
+    build:
+      context: .
+      dockerfile: tools/knowledge_base/Dockerfile
+    ports: ["5002:5002"]
+    environment:
+      CHROMA_HOST: chromadb
+      CHROMA_PORT: "8000"
+      OLLAMA_HOST: host.docker.internal
+      OLLAMA_PORT: "11434"
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-o", "/dev/null", "http://localhost:5002/mcp"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      chromadb:
+        condition: service_healthy
+    restart: unless-stopped
+
+  field-service:
+    build:
+      context: .
+      dockerfile: agents/field_service/Dockerfile
+    ports: ["8001:8001"]
+    environment:
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+      OPENAI_API_KEY: ollama
+      DATABASE_MCP_URL: http://database-mcp:5001/mcp
+      A2A_HOST: field-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/.well-known/agent.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      database-mcp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scheduling:
+    build:
+      context: .
+      dockerfile: agents/scheduling/Dockerfile
+    ports: ["8002:8002"]
+    environment:
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+      OPENAI_API_KEY: ollama
+      DATABASE_MCP_URL: http://database-mcp:5001/mcp
+      A2A_HOST: scheduling
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/.well-known/agent.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      database-mcp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  knowledge:
+    build:
+      context: .
+      dockerfile: agents/knowledge/Dockerfile
+    ports: ["8003:8003"]
+    environment:
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+      OPENAI_API_KEY: ollama
+      KNOWLEDGE_MCP_URL: http://knowledge-mcp:5002/mcp
+      A2A_HOST: knowledge
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/.well-known/agent.json"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      knowledge-mcp:
+        condition: service_healthy
+    restart: unless-stopped
+
+  coordinator:
+    build:
+      context: .
+      dockerfile: agents/coordinator/Dockerfile
+    ports: ["8004:8004"]
+    environment:
+      OPENAI_API_BASE: http://host.docker.internal:11434/v1
+      OPENAI_API_KEY: ollama
+      FIELD_SERVICE_HOST: field-service
+      SCHEDULING_HOST: scheduling
+      KNOWLEDGE_HOST: knowledge
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      field-service:
+        condition: service_healthy
+      scheduling:
+        condition: service_healthy
+      knowledge:
+        condition: service_healthy
+    restart: unless-stopped
