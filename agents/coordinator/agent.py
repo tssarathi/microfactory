@@ -5,7 +5,12 @@ from google.adk.agents.remote_a2a_agent import (
     AGENT_CARD_WELL_KNOWN_PATH,
 )
 
+import os
 from .instruction import INSTRUCTION
+
+FIELD_SERVICE_HOST = os.getenv("FIELD_SERVICE_HOST", "localhost")
+SCHEDULING_HOST = os.getenv("SCHEDULING_HOST", "localhost")
+KNOWLEDGE_HOST = os.getenv("KNOWLEDGE_HOST", "localhost")
 
 field_service_agent = RemoteA2aAgent(
     name="field_service_agent",
@@ -16,7 +21,7 @@ field_service_agent = RemoteA2aAgent(
         "lookups, equipment warranty and service history, parts stock checks, "
         "customer details, and cross-referencing parts usage across jobs."
     ),
-    agent_card=f"http://localhost:8001{AGENT_CARD_WELL_KNOWN_PATH}",
+    agent_card=f"http://{FIELD_SERVICE_HOST}:8001{AGENT_CARD_WELL_KNOWN_PATH}",
 )
 
 scheduling_agent = RemoteA2aAgent(
@@ -27,7 +32,7 @@ scheduling_agent = RemoteA2aAgent(
         "recommendations for HVAC, electrical, plumbing, and refrigeration "
         "field service operations."
     ),
-    agent_card=f"http://localhost:8002{AGENT_CARD_WELL_KNOWN_PATH}",
+    agent_card=f"http://{SCHEDULING_HOST}:8002{AGENT_CARD_WELL_KNOWN_PATH}",
 )
 
 knowledge_agent = RemoteA2aAgent(
@@ -39,7 +44,7 @@ knowledge_agent = RemoteA2aAgent(
         "refrigeration. Use this agent for HOW-TO questions, safety procedures, "
         "troubleshooting steps, and technical documentation lookups."
     ),
-    agent_card=f"http://localhost:8003{AGENT_CARD_WELL_KNOWN_PATH}",
+    agent_card=f"http://{KNOWLEDGE_HOST}:8003{AGENT_CARD_WELL_KNOWN_PATH}",
 )
 
 root_agent = Agent(
