@@ -65,7 +65,7 @@ services:
       DATABASE_MCP_URL: http://database-mcp:5001/mcp
       A2A_HOST: field-service
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/.well-known/agent.json"]
+      test: ["CMD", "curl", "-f", "http://localhost:8001/.well-known/agent-card.json"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -86,7 +86,7 @@ services:
       DATABASE_MCP_URL: http://database-mcp:5001/mcp
       A2A_HOST: scheduling
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8002/.well-known/agent.json"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/.well-known/agent-card.json"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -107,7 +107,7 @@ services:
       KNOWLEDGE_MCP_URL: http://knowledge-mcp:5002/mcp
       A2A_HOST: knowledge
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8003/.well-known/agent.json"]
+      test: ["CMD", "curl", "-f", "http://localhost:8003/.well-known/agent-card.json"]
       interval: 30s
       timeout: 10s
       retries: 3
