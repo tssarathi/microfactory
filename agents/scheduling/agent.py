@@ -28,7 +28,7 @@ db_toolset = McpToolset(
 )
 
 root_agent = Agent(
-    model=LiteLlm(model="openai/qwen3:8b"),
+    model=LiteLlm(model="openai/qwen3.5:9b"),
     name="scheduling_agent",
     description="Scheduling and dispatch advisory. Manages technician availability, "
     "schedule lookups, certification compliance checks, and dispatch "

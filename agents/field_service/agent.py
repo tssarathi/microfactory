@@ -28,9 +28,13 @@ db_toolset = McpToolset(
 )
 
 root_agent = Agent(
-    model=LiteLlm(model="openai/qwen3:8b"),
+    model=LiteLlm(model="openai/qwen3.5:9b"),
     name="field_service_agent",
-    description="Manages work orders, equipment, parts inventory, and customer context for field service operations.",
+    description="Field service operations specialist. Manages work orders, equipment "
+    "records, parts inventory, and customer context for HVAC, electrical, "
+    "plumbing, and refrigeration service jobs. Use this agent for work order "
+    "lookups, equipment warranty and service history, parts stock checks, "
+    "customer details, and cross-referencing parts usage across jobs.",
     instruction=INSTRUCTION,
     tools=[db_toolset],
     disallow_transfer_to_peers=True,

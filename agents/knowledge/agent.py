@@ -25,7 +25,7 @@ kb_toolset = McpToolset(
 )
 
 root_agent = Agent(
-    model=LiteLlm(model="openai/qwen3:8b"),
+    model=LiteLlm(model="openai/qwen3.5:9b"),
     name="knowledge_agent",
     description="Technical knowledge specialist. Handles troubleshooting procedures, "
     "safety protocols, preventive maintenance schedules, Australian Standards "
