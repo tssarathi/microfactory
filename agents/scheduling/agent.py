@@ -1,22 +1,14 @@
 from google.adk.agents import Agent
 from google.adk.models.lite_llm import LiteLlm
-from google.adk.tools.mcp_tool import McpToolset
-from google.adk.tools.mcp_tool.mcp_session_manager import StdioConnectionParams
-from mcp import StdioServerParameters
-from pathlib import Path
-
+from google.adk.tools.mcp_tool import McpToolset, StreamableHTTPConnectionParams
+import os
 
 from .instruction import INSTRUCTION
 
-TOOLS_DIR = Path(__file__).resolve().parents[2] / "tools"
+DATABASE_MCP_URL = os.getenv("DATABASE_MCP_URL", "http://localhost:5001/mcp")
 
 db_toolset = McpToolset(
-    connection_params=StdioConnectionParams(
-        server_params=StdioServerParameters(
-            command="uv",
-            args=["run", "python", str(TOOLS_DIR / "database/server.py")],
-        ),
-    ),
+    connection_params=StreamableHTTPConnectionParams(url=DATABASE_MCP_URL),
     tool_filter=[
         "get_available_technicians",
         "get_technician_details",
