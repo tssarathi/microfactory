@@ -3,14 +3,16 @@ import json
 from datetime import date, datetime, timedelta
 from typing import Annotated, Literal
 from pathlib import Path
+import os
 
-DB_PATH = (
+_default_db = (
     Path(__file__).resolve().parents[3]
     / "data"
     / "silver"
     / "database"
     / "field_service.db"
 )
+DB_PATH = Path(os.getenv("DB_PATH", str(_default_db)))
 
 
 def get_db():
@@ -631,7 +633,8 @@ def search_available_slots(
 
     if specialization:
         techs = [
-            t for t in techs
+            t
+            for t in techs
             if specialization.lower() in json.loads(t["specializations"])
         ]
 
@@ -769,10 +772,16 @@ def update_work_order(
         "New priority level.",
     ] = None,
     technician_id: Annotated[int | None, "ID of the technician to assign."] = None,
-    scheduled_date: Annotated[str | None, "Scheduled date in YYYY-MM-DD format."] = None,
+    scheduled_date: Annotated[
+        str | None, "Scheduled date in YYYY-MM-DD format."
+    ] = None,
     diagnosis: Annotated[str | None, "Technician's diagnosis of the issue."] = None,
-    resolution: Annotated[str | None, "Description of how the issue was resolved."] = None,
-    estimated_hours: Annotated[float | None, "Estimated hours to complete the job."] = None,
+    resolution: Annotated[
+        str | None, "Description of how the issue was resolved."
+    ] = None,
+    estimated_hours: Annotated[
+        float | None, "Estimated hours to complete the job."
+    ] = None,
     actual_hours: Annotated[float | None, "Actual hours spent on the job."] = None,
 ) -> str:
     """Update fields on an existing work order.
@@ -847,7 +856,14 @@ def update_work_order(
 def add_job_note(
     work_order_id: Annotated[int, "The ID of the work order to add the note to."],
     note_type: Annotated[
-        Literal["arrival", "diagnosis", "update", "departure", "parts_request", "customer_contact"],
+        Literal[
+            "arrival",
+            "diagnosis",
+            "update",
+            "departure",
+            "parts_request",
+            "customer_contact",
+        ],
         "The type of job note.",
     ],
     content: Annotated[str, "The note content."],
@@ -1030,44 +1046,3 @@ def update_schedule(
     changes = [f"  {k}: {row[k]} -> {v}" for k, v in updates.items()]
     lines = [f"Updated schedule entry {schedule_id}:"] + changes
     return "\n".join(lines)
-
-
-if __name__ == "__main__":
-    print('Tool: search_work_orders(status="in_progress", customer_name="Eagle")\n')
-    print(search_work_orders(status="in_progress", customer_name="Eagle"))
-    print()
-    print("Tool: get_work_order_details(work_order_id=3)\n")
-    print(get_work_order_details(3))
-    print()
-    print('Tool: get_available_technicians(specialization="refrigeration")\n')
-    print(get_available_technicians(specialization="refrigeration"))
-    print()
-    print('Tool: search_parts(category="hvac")\n')
-    print(search_parts(category="hvac"))
-    print()
-    print("Tool: get_customer_details(customer_id=1)\n")
-    print(get_customer_details(1))
-    print()
-    print("Tool: get_customer_equipment(customer_id=1)\n")
-    print(get_customer_equipment(1))
-    print()
-    print("Tool: get_equipment_details(equipment_id=1)\n")
-    print(get_equipment_details(1))
-    print()
-    print("Tool: get_technician_details(technician_id=1)\n")
-    print(get_technician_details(1))
-    print()
-    print('Tool: get_technician_schedule(technician_id=1, start_date="2026-03-14", end_date="2026-03-18")\n')
-    print(get_technician_schedule(1, "2026-03-14", "2026-03-18"))
-    print()
-    print("Tool: get_technician_certifications(technician_id=7)\n")
-    print(get_technician_certifications(7))
-    print()
-    print("Tool: check_certification_compliance(technician_id=7, work_order_id=12)\n")
-    print(check_certification_compliance(7, 12))
-    print()
-    print("Tool: check_certification_compliance(technician_id=1, work_order_id=3)\n")
-    print(check_certification_compliance(1, 3))
-    print()
-    print('Tool: search_available_slots(target_date="2026-03-14", specialization="hvac", min_hours=2)\n')
-    print(search_available_slots("2026-03-14", specialization="hvac", min_hours=2))
