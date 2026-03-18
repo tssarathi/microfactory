@@ -71,8 +71,8 @@ flowchart TD
 | Agent         | Port | Role                                                                 | MCP Tools                     |
 | ------------- | ---- | -------------------------------------------------------------------- | ----------------------------- |
 | Coordinator   | 8004 | Routes queries to specialists, synthesises multi-agent responses     | None (delegates via A2A)      |
-| Field Service | 8001 | Work orders, equipment, parts inventory, customer context            | 6 read + 3 write tools        |
-| Scheduling    | 8002 | Technician availability, dispatch, certification compliance          | 9 scheduling/compliance tools |
+| Field Service | 8001 | Work orders, equipment, parts inventory, customer context            | 6 read tools via database-mcp |
+| Scheduling    | 8002 | Technician availability, dispatch, certification compliance          | 6 read tools via database-mcp |
 | Knowledge     | 8003 | Troubleshooting procedures, safety protocols, maintenance checklists | 3 search/retrieval tools      |
 
 All agents run qwen3.5:9b via LiteLLM and enforce strict domain boundaries.
