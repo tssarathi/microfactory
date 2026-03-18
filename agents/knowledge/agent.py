@@ -18,7 +18,9 @@ kb_toolset = McpToolset(
         ),
     ),
     tool_filter=[
-        "search_knowledge",
+        "search_knowledge_base",
+        "get_article",
+        "list_articles",
     ],
 )
 
