@@ -1,13 +1,23 @@
+import os
 from typing import Annotated
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
 
-client = chromadb.HttpClient(host="localhost", port=8000)
+CHROMA_HOST = os.environ["CHROMA_HOST"]
+CHROMA_PORT = int(os.environ["CHROMA_PORT"])
+OLLAMA_HOST = os.environ["OLLAMA_HOST"]
+OLLAMA_PORT = os.environ["OLLAMA_PORT"]
+
+client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
 ef = OllamaEmbeddingFunction(
     model_name="nomic-embed-text",
-    url="http://localhost:11434",
+    url=f"http://{OLLAMA_HOST}:{OLLAMA_PORT}",
 )
 
 collection = client.get_collection("knowledge_base", embedding_function=ef)

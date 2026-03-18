@@ -1,16 +1,27 @@
+import os
 import shutil
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import chromadb
 from chromadb.utils.embedding_functions import OllamaEmbeddingFunction
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 KB_DIR = Path("data/bronze/knowledge_base/")
 
-client = chromadb.HttpClient(host="localhost", port=8000)
+CHROMA_HOST = os.environ["CHROMA_HOST"]
+CHROMA_PORT = int(os.environ["CHROMA_PORT"])
+OLLAMA_HOST = os.environ["OLLAMA_HOST"]
+OLLAMA_PORT = os.environ["OLLAMA_PORT"]
+
+client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
 
 ef = OllamaEmbeddingFunction(
     model_name="nomic-embed-text",
-    url="http://localhost:11434",
+    url=f"http://{OLLAMA_HOST}:{OLLAMA_PORT}",
 )
 
 # Clean up orphaned HNSW segment directories
