@@ -1,7 +1,7 @@
 [project]
 name = "knowledge-base"
 version = "0.1.0"
-description = "Add your description here"
+description = "FastMCP server for ChromaDB technical knowledge RAG search"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
