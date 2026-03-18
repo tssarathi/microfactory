@@ -13,23 +13,26 @@ This project demonstrates the AI Factory approach: autonomous agentic teams oper
 ## Architecture
 
 ```mermaid
-graph TD
+flowchart TD
     subgraph orchestration ["Orchestration"]
         COORD(["Coordinator :8004<br>Query routing · Response synthesis"])
     end
 
     subgraph agents ["Specialist Agents"]
+        direction LR
         FS("Field Service :8001<br>Work orders · Equipment · Parts")
         SCHED("Scheduling :8002<br>Dispatch · Compliance · Availability")
         KNOW("Knowledge :8003<br>Procedures · Safety · Standards")
     end
 
     subgraph tools ["Tool Servers"]
+        direction LR
         DB_MCP["Database MCP :5001<br>18 tools · read + write"]
         KB_MCP["Knowledge Base MCP :5002<br>3 tools · search + retrieval"]
     end
 
     subgraph data ["Data"]
+        direction LR
         SQLITE[("SQLite<br>9 tables · 222 records")]
         CHROMA[("ChromaDB :8000<br>25 documents")]
     end
