@@ -144,6 +144,7 @@ services:
       dockerfile: agents/coordinator/Dockerfile
     ports: ["8004:8004"]
     environment:
+      A2A_HOST: coordinator
       OPENAI_API_BASE: http://host.docker.internal:11434/v1
       OPENAI_API_KEY: ollama
       FIELD_SERVICE_HOST: field-service
