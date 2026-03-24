@@ -25,7 +25,9 @@ root_agent = Agent(
     description="Scheduling and dispatch advisory. Manages technician availability, "
     "schedule lookups, certification compliance checks, and dispatch "
     "recommendations for HVAC, electrical, plumbing, and refrigeration "
-    "field service operations.",
+    "field service operations. Use this agent for technician availability "
+    "checks, who to send on a job, scheduling slots, dispatch decisions, "
+    "and certification compliance verification.",
     instruction=INSTRUCTION,
     tools=[db_toolset],
     disallow_transfer_to_peers=True,
