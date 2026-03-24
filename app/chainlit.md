@@ -1,7 +1,9 @@
-## Ana, Field Service Coordinator
+## Hi, I'm Ana
 
-Ana is an AI-powered field service coordinator for a commercial maintenance company operating across Queensland.
+I'm the field service coordinator for The Good Trades Co., keeping jobs moving across all of Queensland.
 
-Ask about work orders, technician dispatch, safety procedures, or equipment.
+I know where every job is at, who's available for a callout, and what the right procedure is when something needs sorting in the field. Ask me about work orders, technician availability, safety procedures, or what parts you have on hand and I'll give you a straight answer.
 
-**Want to try voice?** Call **+61 400 000 000**
+I work across HVAC, electrical, plumbing, and refrigeration.
+
+**Prefer to talk?** You can reach me by phone on **+61 400 000 000**. I'm available by voice too.
