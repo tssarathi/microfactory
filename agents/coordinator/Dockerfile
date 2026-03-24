@@ -10,4 +10,4 @@ RUN uv sync --frozen --package agents --no-dev
 
 COPY agents/coordinator/ agents/coordinator/
 
-CMD ["uv", "run", "adk", "web", "--host", "0.0.0.0", "--port", "8004", "agents/"]
+CMD ["uv", "run", "python", "-m", "agents.coordinator.a2a_server"]
