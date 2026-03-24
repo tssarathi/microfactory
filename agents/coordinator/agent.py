@@ -30,7 +30,9 @@ scheduling_agent = RemoteA2aAgent(
         "Scheduling and dispatch advisory. Manages technician availability, "
         "schedule lookups, certification compliance checks, and dispatch "
         "recommendations for HVAC, electrical, plumbing, and refrigeration "
-        "field service operations."
+        "field service operations. Use this agent for technician availability "
+        "checks, who to send on a job, scheduling slots, dispatch decisions, "
+        "and certification compliance verification."
     ),
     agent_card=f"http://{SCHEDULING_HOST}:8002{AGENT_CARD_WELL_KNOWN_PATH}",
 )
@@ -48,7 +50,7 @@ knowledge_agent = RemoteA2aAgent(
 )
 
 root_agent = Agent(
-    model=LiteLlm(model="openai/qwen3.5:9b"),
+    model=LiteLlm(model="openai/qwen3.5:35b"),
     name="coordinator_agent",
     description="Operations coordinator for The Good Trades Co. field service. Routes queries "
     "to specialist agents — Field Service for work orders, equipment, parts, and "
