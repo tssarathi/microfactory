@@ -69,7 +69,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     depends_on:
       database-mcp:
         condition: service_healthy
@@ -90,7 +90,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     depends_on:
       database-mcp:
         condition: service_healthy
@@ -111,7 +111,7 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     depends_on:
       knowledge-mcp:
         condition: service_healthy
@@ -154,12 +154,25 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
+      start_period: 120s
     depends_on:
       field-service:
         condition: service_healthy
       scheduling:
         condition: service_healthy
       knowledge:
+        condition: service_healthy
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports: ["8005:8005"]
+    environment:
+      COORDINATOR_URL: http://coordinator:8004
+      TWILIO_PHONE_NUMBER: "+61 400 000 000"
+    depends_on:
+      coordinator:
         condition: service_healthy
     restart: unless-stopped
