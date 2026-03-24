@@ -10,4 +10,4 @@ RUN uv sync --frozen --package agents --no-dev
 
 COPY agents/field_service/ agents/field_service/
 
-CMD ["uv", "run", "python", "-m", "agents.field_service.a2a_server"]
+CMD ["uv", "run", "--frozen", "--package", "agents", "python", "-m", "agents.field_service.a2a_server"]

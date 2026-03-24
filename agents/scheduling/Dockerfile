@@ -10,4 +10,4 @@ RUN uv sync --frozen --package agents --no-dev
 
 COPY agents/scheduling/ agents/scheduling/
 
-CMD ["uv", "run", "python", "-m", "agents.scheduling.a2a_server"]
+CMD ["uv", "run", "--frozen", "--package", "agents", "python", "-m", "agents.scheduling.a2a_server"]
