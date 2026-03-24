@@ -50,7 +50,7 @@ knowledge_agent = RemoteA2aAgent(
 )
 
 root_agent = Agent(
-    model=LiteLlm(model="openai/qwen3.5:35b"),
+    model=LiteLlm(model="openai/qwen3.5:9b"),
     name="coordinator_agent",
     description="Operations coordinator for The Good Trades Co. field service. Routes queries "
     "to specialist agents — Field Service for work orders, equipment, parts, and "
