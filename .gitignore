@@ -12,6 +12,8 @@ wheels/
 # vscode
 *.code-workspace
 .vscode/
+.claude/
+.superpowers/
 
 # docs
 docs/
