@@ -10,4 +10,4 @@ RUN uv sync --frozen --package knowledge-base --no-dev
 
 COPY tools/knowledge_base/ tools/knowledge_base/
 
-CMD ["uv", "run", "python", "tools/knowledge_base/server.py"]
+CMD ["uv", "run", "--frozen", "--package", "knowledge-base", "python", "tools/knowledge_base/server.py"]

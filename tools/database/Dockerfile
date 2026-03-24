@@ -10,4 +10,4 @@ RUN uv sync --frozen --package mcp-database --no-dev
 
 COPY tools/database/ tools/database/
 
-CMD ["uv", "run", "python", "tools/database/server.py"]
+CMD ["uv", "run", "--frozen", "--package", "mcp-database", "python", "tools/database/server.py"]
