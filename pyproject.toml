@@ -18,4 +18,5 @@ members = [
     "agents",
     "app",
     "voice",
+    "speak",
 ]
