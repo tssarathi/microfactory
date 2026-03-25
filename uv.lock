@@ -2333,6 +2333,7 @@ dependencies = [
     { name = "chromadb" },
     { name = "langchain-text-splitters" },
     { name = "ollama" },
+    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -2340,6 +2341,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=1.5.5" },
     { name = "langchain-text-splitters", specifier = ">=1.1.1" },
     { name = "ollama", specifier = ">=0.6.1" },
+    { name = "python-dotenv", specifier = ">=1.2.2" },
 ]
 
 [[package]]
@@ -4766,6 +4768,12 @@ wheels = [
 name = "voice"
 version = "0.1.0"
 source = { virtual = "voice" }
+dependencies = [
+    { name = "websockets" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "websockets", specifier = ">=15.0.1" }]
 
 [[package]]
 name = "watchdog"
